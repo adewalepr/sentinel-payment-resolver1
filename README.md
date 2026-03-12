@@ -1,42 +1,33 @@
-# Sentinel: Autonomous E-Commerce Booking & Identity Engine
+# 🏨 The Sentinel Suites - Automated Luxury Booking System
 
-**Sentinel** is an intelligent, full-stack automation solution designed to bridge the gap between customer acquisition, payment processing, and CRM management. Built for the **AI & Automation Innovators Challenge (AAIC)**, it eliminates "Ghost Payments" by synchronizing front-end user data with real-time financial webhooks.
+A high-end hospitality solution integrating **Softr**, **Airtable**, **Make.com**, and **Flutterwave** to create a seamless, zero-touch booking experience.
 
-## 🚀 The Problem
-E-commerce businesses often lose customer data when payments happen in isolation from their registration forms. Manual reconciliation of "who paid for what" is slow, prone to error, and prevents instant customer fulfillment.
+## 🚀 Project Overview
+The Sentinel Suites is a proof-of-concept for a modern hotel management system. It replaces manual booking with an automated workflow that handles guest registration, secure payments, and instant email confirmations.
 
-## 🧠 The Solution: The "Front-to-Back" Architecture
-Sentinel creates a seamless loop by capturing user intent *before* the transaction occurs, ensuring 100% data integrity.
+## 🛠 The Tech Stack
+* **Frontend:** [Softr](https://www.softr.io/) - Used for the luxury UI and Guest Registry interface.
+* **Database:** [Airtable](https://airtable.com/) - Acts as the Central Management System (CMS) and Guest Database.
+* **Automation:** [Make.com](https://www.make.com/) - The "Brain" that triggers emails and updates records.
+* **Payments:** [Flutterwave](https://flutterwave.com/) - Secure payment gateway integration.
 
-### Key Features (Stage 1):
-* **Integrated Booking Portal:** A high-conversion front-end built on **Softr** to capture user data first.
-* **Pending-to-Paid Logic:** Automatically stages customer data in **Airtable** as "Pending" until the financial "Handshake" is confirmed.
-* **Real-time Webhook Synchronization:** Instant payment validation via **Flutterwave**.
-* **Automated Retention Messaging:** Real-time WhatsApp triggers via **Twilio API** to deliver instant payment confirmation and loyalty status updates.
+## 🔄 The System Workflow
+1. **Discovery:** Guest browses suites via the Softr dynamic grid.
+2. **Registration:** Guest submits details through the integrated Guest Registry form.
+3. **Data Capture:** Information is instantly synced to the **Airtable Sentinel Engine**.
+4. **Handoff:** Softr triggers a secure redirect to the **Flutterwave** payment portal.
+5. **Automation:** **Make.com** detects the new Airtable record and dispatches a personalized HTML confirmation email via Gmail.
 
----
+## 📸 System Architecture
+*<img width="1215" height="519" alt="image" src="https://github.com/user-attachments/assets/5d1628d3-7ed8-4c3a-97f1-599b46fd5143" />
+*
+*<img width="1112" height="600" alt="image" src="https://github.com/user-attachments/assets/d309c140-f8ff-4eb2-87aa-5017e3741ec4" />
+*
 
-## 🛠️ Technical Stack
-* **Frontend:** Softr (User Interface & Booking)
-* **Database:** Airtable (Relational CRM & Logic Base)
-* **Logic Engine:** Make.com / n8n (The "Brain")
-* **Payment Gateway:** Flutterwave (API/Webhook)
-* **Communication:** Twilio (WhatsApp Business API)
-
----
-
-## 🧪 How to Test (For Judges)
-To ensure a seamless evaluation without real-world financial charges, this project is in **Sandbox/Test Mode**.
-
-1.  **Register:** Visit the [Live Deployment Link] and fill out the Booking Form.
-2.  **Payment:** Upon submission, you will be redirected to the Flutterwave Test Environment.
-    * **Test Card:** `4444 4444 4444 4444`
-    * **CVV:** `123` | **Pin:** `1234`
-3.  **Verification:** Watch the "Live Dashboard" on the site to see your status flip from **Pending** to **Paid** in real-time.
-4.  **WhatsApp Delivery:** (Optional) To receive the live message, join the Twilio Sandbox by sending `join [Your-Sandbox-Code]` to `+1 415 523 8886`. *Note: In production, this is a native opt-in experience.*
+## 💡 Key Features
+* **Dynamic Room Selection:** Dropdown logic that maps room types to specific pricing.
+* **Instant Handoff:** Seamless transition from data capture to payment.
+* **Automated Concierge:** Zero-latency email responses for guests.
 
 ---
-
-## 📂 Project Structure
-* `/workflows` - Exported JSON files of the automation logic.
-* `/docs` - Technical architecture and data schema.
+*Developed for the Technical Challenge 2026*
