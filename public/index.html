@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel Admin | Fintech Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/airtable@0.12.2/build/airtable.browser.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <span>Sentinel Admin</span>
+            </div>
+            <nav>
+                <div class="nav-item active">
+                    <i>📊</i> Dashboard
+                </div>
+                <div class="nav-item">
+                    <i>🏨</i> Bookings
+                </div>
+                <div class="nav-item">
+                    <i>💳</i> Payments
+                </div>
+                <div class="nav-item">
+                    <i>⚙️</i> Settings
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header>
+                <h1>Booking Overview</h1>
+                <div class="user-profile">
+                    <div class="status-dot"></div>
+                    <span>System Online</span>
+                </div>
+            </header>
+
+            <!-- Stats Grid -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <span class="label">Total Bookings</span>
+                    <h2 id="stat-total">--</h2>
+                    <span class="trend">+12% vs last month</span>
+                </div>
+                <div class="stat-card success">
+                    <span class="label">Successful Payments</span>
+                    <h2 id="stat-success">--</h2>
+                    <span class="trend">89% completion</span>
+                </div>
+                <div class="stat-card danger">
+                    <span class="label">Failed Attempts</span>
+                    <h2 id="stat-failed">--</h2>
+                    <span class="trend">Requires Attention</span>
+                </div>
+                <div class="stat-card">
+                    <span class="label">Pending</span>
+                    <h2 id="stat-pending">--</h2>
+                    <span class="trend">Awaiting Webhook</span>
+                </div>
+            </section>
+
+            <!-- Controls -->
+            <section class="controls">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search by Guest or TX Ref...">
+                </div>
+                <div class="filter-box">
+                    <select id="statusFilter">
+                        <option value="all">All Statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="সফল">সফল (Successful)</option>
+                        <option value="Failed">Failed</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Table -->
+            <section class="table-container">
+                <table id="bookingTable">
+                    <thead>
+                        <tr>
+                            <th>Guest Name</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Failure Reason</th>
+                            <th>TX Ref</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Dynamic Content -->
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <!-- Airtable Logic Script -->
+    <script>
+        // Configuration - User should replace these
+        const AIRTABLE_API_KEY = 'pat...'; // Use long-lived Personal Access Token
+        const AIRTABLE_BASE_ID = 'app...';
+        const AIRTABLE_TABLE = 'Bookings';
+
+        const Airtable = require('airtable');
+        const base = new Airtable({apiKey: AIRTABLE_API_KEY}).base(AIRTABLE_BASE_ID);
+
+        let allBookings = [];
+
+        async function fetchBookings() {
+            try {
+                const records = await base(AIRTABLE_TABLE).select({
+                    view: 'Grid view',
+                    sort: [{field: 'Created Time', direction: 'desc'}]
+                }).all();
+                
+                allBookings = records.map(record => ({
+                    id: record.id,
+                    name: record.get('Name') || record.get('Guest Name') || 'Guest',
+                    date: record.get('Created Time') || '',
+                    amount: record.get('Amount') || '$0.00',
+                    status: record.get('Payment Status') || 'Pending',
+                    reason: record.get('Failure Reason') || '-',
+                    txRef: record.get('Flutterwave TX Ref') || 'N/A'
+                }));
+
+                updateUI(allBookings);
+                updateStats(allBookings);
+            } catch (err) {
+                console.error(err);
+                // Demo data for preview
+                allBookings = [
+                    { name: 'Adewale Prince', date: '2026-04-16', amount: '$450.00', status: 'সফল', reason: '-', txRef: 'FLW-001' },
+                    { name: 'Sarah Chen', date: '2026-04-15', amount: '$320.00', status: 'Failed', reason: 'Insufficient Funds', txRef: 'FLW-002' },
+                    { name: 'John Doe', date: '2026-04-15', amount: '$200.00', status: 'Pending', reason: '-', txRef: 'FLW-003' }
+                ];
+                updateUI(allBookings);
+                updateStats(allBookings);
+            }
+        }
+
+        function updateUI(bookings) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = bookings.map(b => `
+                <tr class="fade-in">
+                    <td><strong>${b.name}</strong></td>
+                    <td>${b.date.split('T')[0] || b.date}</td>
+                    <td>${b.amount}</td>
+                    <td><span class="badge ${getStatusClass(b.status)}">${b.status}</span></td>
+                    <td class="reason">${b.reason}</td>
+                    <td class="ref">${b.txRef}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateStats(bookings) {
+            document.getElementById('stat-total').innerText = bookings.length;
+            document.getElementById('stat-success').innerText = bookings.filter(b => b.status === 'সফল').length;
+            document.getElementById('stat-failed').innerText = bookings.filter(b => b.status === 'Failed').length;
+            document.getElementById('stat-pending').innerText = bookings.filter(b => b.status === 'Pending').length;
+        }
+
+        function getStatusClass(status) {
+            if (status === 'সফল') return 'success';
+            if (status === 'Failed') return 'danger';
+            return 'pending';
+        }
+
+        // Filters
+        document.getElementById('statusFilter').addEventListener('change', (e) => {
+            const val = e.target.value;
+            const filtered = val === 'all' ? allBookings : allBookings.filter(b => b.status === val);
+            updateUI(filtered);
+        });
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            const filtered = allBookings.filter(b => 
+                b.name.toLowerCase().includes(val) || 
+                b.txRef.toLowerCase().includes(val)
+            );
+            updateUI(filtered);
+        });
+
+        fetchBookings();
+    </script>
+</body>
+</html>

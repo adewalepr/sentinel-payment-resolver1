@@ -1,0 +1,96 @@
+/* 
+   SENTINEL FINTECH SKIN for SOFTR 
+   Add this to Settings -> Custom Code -> Header 
+*/
+
+:root {
+    --sw-primary-color: #6366f1 !important;
+    --sw-border-radius: 12px !important;
+    --sw-font-family: 'Outfit', sans-serif !important;
+}
+
+/* Global Aesthetics */
+body {
+    background-color: #f8fafc !important;
+    color: #1e293b !important;
+}
+
+/* Modern Card Styling */
+.sw-background-color-white {
+    background-color: #ffffff !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+    transition: transform 0.2s ease !important;
+}
+
+.sw-background-color-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1) !important;
+}
+
+/* Status Indicators (Custom CSS classes for Airtable fields) */
+.status-sফল {
+    background: #dcfce7 !important;
+    color: #166534 !important;
+    padding: 4px 12px !important;
+    border-radius: 50px !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+}
+
+.status-failed {
+    background: #fee2e2 !important;
+    color: #991b1b !important;
+    padding: 4px 12px !important;
+    border-radius: 50px !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+}
+
+/* Alert Box for Failure Notifications */
+.failure-alert {
+    background: #fdf2f2;
+    border: 1px solid #fecaca;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+
+.failure-alert-icon {
+    background: #ef4444;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-weight: bold;
+}
+
+.failure-alert-content h4 {
+    margin: 0 0 0.25rem 0;
+    color: #991b1b;
+}
+
+.failure-alert-content p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #b91c1c;
+}
+
+.retry-button {
+    display: inline-block;
+    background: #6366f1;
+    color: white !important;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+}

@@ -1,0 +1,84 @@
+ 
+AI  &  Automation  Innovators  Challenge  (AAIC)  Stage  2:  Improvement  &  Optimization  Round  
+Theme:  Collaboration  •  Refactoring  •  System  Readiness  
+Duration:
+ 
+5
+ 
+Days
+ 
+1.  Introduction  
+Stage  2  tests  your  ability  to  work  like  a  professional  AI/automation  engineer .  
+In  real-world  AI  and  automation  projects,  you  often  inherit  existing  models,  
+workﬂows,
+ 
+or
+ 
+scripts
+ 
+rather
+ 
+than
+ 
+building
+ 
+from
+ 
+scratch.
+ 
+This  stage  evaluates  your  ability  to:  
+●  Understand  someone  else’s  AI/automation  system  ●  Analyze  weaknesses  in  models,  scripts,  or  workﬂows  ●  Optimize  performance  and  efﬁciency  ●  Add  meaningful  features  or  improvements  ●  Prepare  the  solution  for  real-world  deployment  
+Participants  will  be  assigned  another  participant’s  Stage  1  AI  or  automation  project .  
+This  stage  emphasizes  engineering  maturity  and  practical  AI/automation  skills .  
+2.  Stage  Objective  
+You  are  required  to:  
+●  Review  an  assigned  Stage  1  AI/automation  project  ●  Improve  and  optimize  the  existing  codebase,  models,  or  workﬂows  ●  Fix  bugs  and  inefﬁciencies  ●  Enhance  usability,  scalability,  and  robustness  ●  Redeploy  the  upgraded  system  
+3.  Core  Task  
+Each  participant  will  receive:  
+●  Access  to  another  participant’s  repository  (GitHub,  GitLab,  or  similar)  ●  Live  system  link  (if  available)  ●  Original  project  documentation  
+Your  responsibilities  include:  
+A.  Code  &  System  Review  
+●  Understand  the  project  structure  ●  Identify  model  inefﬁciencies  or  algorithmic  bottlenecks  
+ ●  Detect  workﬂow  or  automation  gaps  ●  Identify  UI/UX  or  interaction  issues  (if  applicable)  ●  Assess  scalability,  reliability,  and  deployment  stability  
+B.  Improvements  (Mandatory)  
+You  must  implement  at  least:  
+●  2  performance  or  structural  optimizations  (e.g.,  faster  model  inference,  
+streamlined
+ 
+automation
+ 
+ﬂows)
+ ●  2  feature  enhancements  or  additions  (e.g.,  smarter  prediction,  added  
+automation
+ 
+triggers)
+ ●  UI/UX  or  interaction  reﬁnements  ●  Updated  documentation  explaining  your  changes  
+C.  System  Readiness  
+You  must  ensure:  
+●  All  AI  models,  automation  scripts,  and  interfaces  function  correctly  ●  No  broken  routes,  scripts,  or  data  pipelines  ●  Improved  responsiveness  and  reliability  ●  Cleaner  project  organization  and  modular  design  ●  Stable  deployment  and  live  accessibility  
+4.  Mandatory  Submission  Requirements  
+You  must  submit:  
+A.  Updated  Repository  
+●  Forked  or  cloned  version  of  assigned  project  ●  Clear  commit  history  showing  your  improvements  and  changes  ●  Well-documented  modiﬁcations  
+B.  Live  Improved  Version  
+●  Deploy  the  upgraded  AI/automation  system  ●  Must  be  fully  testable  by  judges  
+C.  Improvement  Report  (Very  Important)  
+Submit  a  concise  document  detailing:  
+●  Issues  identiﬁed  in  the  original  system  ●  Improvements  and  optimizations  implemented  ●  Features  added  or  enhanced  ●  Why  your  changes  improve  system  performance,  usability,  or  reliability  ●  Key  technical  decisions  made  
+ D.  3-Minute  Demo  Video  
+Explain:  
+●  Original  project  overview  ●  Problems  identiﬁed  ●  Improvements  implemented  ●  Demonstration  of  the  upgraded  system  in  action  
+5.  Development  Rules  
+●  You  must  not  rebuild  the  project  from  scratch  ●  You  must  work  on  the  assigned  system  ●  Major  redesigns  are  allowed,  but  original  base  must  remain  traceable  ●  Clear  commit  separation  for  changes  is  mandatory  ●  Collaboration  with  the  original  developer  is  NOT  allowed  
+6.  Evaluation  Criteria  
+●  System  Understanding  &  Refactoring  –  30%  ●  Quality  of  Optimizations  –  30%  ●  Feature  Enhancement  &  Innovation  –  20%  ●  UI/UX  &  Usability  –  10%  ●  Documentation  &  Explanation  –  10%  
+7.  Timeline  
+●  Duration:  5  Days  ●  Strict  deadline  –  no  extensions  allowed  
+What  This  Stage  Tests  
+●  Can  you  understand  unfamiliar  AI/automation  code,  models,  or  workﬂows ?  ●  Can  you  professionally  improve  someone  else’s  solution ?  ●  Can  you  think  like  a  system  engineer  or  AI  product  developer ?  ●  Can  you  prepare  AI/automation  solutions  for  real-world  use ?  
+Final  Message  
+Stage  1  proved  you  can  build  functional  AI/automation  systems .  
+Stage  2  proves  you  can  engineer,  optimize,  and  professionalize  solutions .  
+This  stage  separates  average  participants  from  true  AI  &  automation  professionals .  
+Optimize.  Refactor.  Elevate.  
+  
