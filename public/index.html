@@ -83,6 +83,10 @@
 
             <!-- Table -->
             <section class="table-container">
+                <div id="loading" class="loading-overlay">
+                    <div class="spinner"></div>
+                    <p>Fetching booking data...</p>
+                </div>
                 <table id="bookingTable">
                     <thead>
                         <tr>
@@ -92,6 +96,7 @@
                             <th>Status</th>
                             <th>Failure Reason</th>
                             <th>TX Ref</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -102,47 +107,26 @@
         </main>
     </div>
 
-    <!-- Airtable Logic Script -->
     <script>
-        // Configuration - User should replace these
-        const AIRTABLE_API_KEY = 'pat...'; // Use long-lived Personal Access Token
-        const AIRTABLE_BASE_ID = 'app...';
-        const AIRTABLE_TABLE = 'Bookings';
-
-        const Airtable = require('airtable');
-        const base = new Airtable({apiKey: AIRTABLE_API_KEY}).base(AIRTABLE_BASE_ID);
-
         let allBookings = [];
 
         async function fetchBookings() {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'flex';
+            
             try {
-                const records = await base(AIRTABLE_TABLE).select({
-                    view: 'Grid view',
-                    sort: [{field: 'Created Time', direction: 'desc'}]
-                }).all();
+                const response = await fetch('/api/bookings');
+                if (!response.ok) throw new Error('Network response was not ok');
                 
-                allBookings = records.map(record => ({
-                    id: record.id,
-                    name: record.get('Name') || record.get('Guest Name') || 'Guest',
-                    date: record.get('Created Time') || '',
-                    amount: record.get('Amount') || '$0.00',
-                    status: record.get('Payment Status') || 'Pending',
-                    reason: record.get('Failure Reason') || '-',
-                    txRef: record.get('Flutterwave TX Ref') || 'N/A'
-                }));
-
+                allBookings = await response.json();
+                
                 updateUI(allBookings);
                 updateStats(allBookings);
             } catch (err) {
-                console.error(err);
-                // Demo data for preview
-                allBookings = [
-                    { name: 'Adewale Prince', date: '2026-04-16', amount: '$450.00', status: 'সফল', reason: '-', txRef: 'FLW-001' },
-                    { name: 'Sarah Chen', date: '2026-04-15', amount: '$320.00', status: 'Failed', reason: 'Insufficient Funds', txRef: 'FLW-002' },
-                    { name: 'John Doe', date: '2026-04-15', amount: '$200.00', status: 'Pending', reason: '-', txRef: 'FLW-003' }
-                ];
-                updateUI(allBookings);
-                updateStats(allBookings);
+                console.error('Error fetching bookings:', err);
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 2rem; color: var(--danger);">Failed to load bookings. Please check console for details.</td></tr>`;
+            } finally {
+                loading.style.display = 'none';
             }
         }
 
@@ -151,31 +135,43 @@
             tableBody.innerHTML = bookings.map(b => `
                 <tr class="fade-in">
                     <td><strong>${b.name}</strong></td>
-                    <td>${b.date.split('T')[0] || b.date}</td>
+                    <td>${b.date ? b.date.split('T')[0] : 'N/A'}</td>
                     <td>${b.amount}</td>
                     <td><span class="badge ${getStatusClass(b.status)}">${b.status}</span></td>
                     <td class="reason">${b.reason}</td>
                     <td class="ref">${b.txRef}</td>
+                    <td>
+                        ${b.status === 'Failed' ? 
+                            `<button class="btn-retry" onclick="retryPayment('${b.txRef}')">Retry Payment</button>` : 
+                            `<span class="no-action">-</span>`
+                        }
+                    </td>
                 </tr>
             `).join('');
         }
 
         function updateStats(bookings) {
             document.getElementById('stat-total').innerText = bookings.length;
-            document.getElementById('stat-success').innerText = bookings.filter(b => b.status === 'সফল').length;
+            document.getElementById('stat-success').innerText = bookings.filter(b => b.status === 'Successful').length;
             document.getElementById('stat-failed').innerText = bookings.filter(b => b.status === 'Failed').length;
             document.getElementById('stat-pending').innerText = bookings.filter(b => b.status === 'Pending').length;
         }
 
         function getStatusClass(status) {
-            if (status === 'সফল') return 'success';
+            if (status === 'Successful') return 'success';
             if (status === 'Failed') return 'danger';
             return 'pending';
+        }
+
+        function retryPayment(txRef) {
+            // Redirect to retry page as required
+            window.location.href = `retry-payment.html?tx_ref=${txRef}`;
         }
 
         // Filters
         document.getElementById('statusFilter').addEventListener('change', (e) => {
             const val = e.target.value;
+            // Map "সফল" filter to "Successful" if necessary, but we standardized the data now
             const filtered = val === 'all' ? allBookings : allBookings.filter(b => b.status === val);
             updateUI(filtered);
         });
@@ -189,7 +185,8 @@
             updateUI(filtered);
         });
 
-        fetchBookings();
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', fetchBookings);
     </script>
 </body>
 </html>

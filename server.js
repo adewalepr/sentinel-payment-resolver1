@@ -1,145 +1,107 @@
 require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
-const Airtable = require('airtable');
-const crypto = require('crypto');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Airtable Config (Graceful check)
-let base = null;
-if (process.env.AIRTABLE_API_KEY) {
-    base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(process.env.AIRTABLE_BASE_ID);
-} else {
-    console.warn('⚠️ AIRTABLE_API_KEY missing. Backend updates will be disabled.');
-}
-const tableName = process.env.AIRTABLE_TABLE_NAME || 'Bookings';
-
+// Middleware
 app.use(express.json());
-// Serve static frontend files from the 'public' directory
 app.use(express.static('public'));
 
-// Admin Dashboard route
-app.get('/admin', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
+// Simple CORS implementation (since external 'cors' package install failed)
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, verif-hash");
+    next();
 });
 
-// Failure Analysis Mapping
-const FAILURE_MAPPING = {
-    'insufficient_funds': {
-        msg: 'Account balance is too low.',
-        action: 'Please top up your account or use another card.'
-    },
-    'invalid_card_details': {
-        msg: 'The card details provided are incorrect.',
-        action: 'Double-check your card number, expiry date, and CVV.'
-    },
-    'transaction_limit_exceeded': {
-        msg: 'You have reached your transaction limit.',
-        action: 'Contact your bank to increase your limit or use a different payment method.'
-    },
-    'authentication_failed': {
-        msg: '3D Secure authentication failed.',
-        action: 'Ensure you provide the correct OTP or check with your bank.'
-    },
-    'expired_card': {
-        msg: 'This card has expired.',
-        action: 'Please use a valid, non-expired card.'
-    },
-    'bank_system_error': {
-        msg: 'Your bank is currently experiencing issues.',
-        action: 'Wait a few minutes and try again, or use another bank card.'
-    },
-    'default': {
-        msg: 'Payment was declined by the processor.',
-        action: 'Please contact your bank or try a different payment method.'
-    }
+// Airtable Config
+const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
+const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
+const AIRTABLE_TABLE_NAME = process.env.AIRTABLE_TABLE_NAME || 'Bookings';
+
+const airtableBaseUrl = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}`;
+
+// Helper: Status Mapper
+const mapStatus = (status) => {
+    if (status === 'সফল' || status === 'Successful' || status === 'successful') return 'Successful';
+    if (status === 'Failed' || status === 'failed') return 'Failed';
+    return 'Pending';
 };
 
-// Webhook Endpoint
-app.post('/webhook', async (req, res) => {
+// GET /api/bookings - Fetch and transform records
+app.get('/api/bookings', async (req, res) => {
+    try {
+        const response = await axios.get(airtableBaseUrl, {
+            headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }
+        });
+
+        const transformed = response.data.records.map(record => ({
+            name: record.fields['Guest Name'] || record.fields['Name'] || 'Guest',
+            date: record.fields['Created Time'] || record.createdTime,
+            amount: record.fields['Amount'] || '$0.00',
+            status: mapStatus(record.fields['Payment Status']),
+            reason: record.fields['Failure Reason'] || '-',
+            txRef: record.fields['Flutterwave TX Ref'] || 'N/A'
+        }));
+
+        res.json(transformed);
+    } catch (error) {
+        console.error('Error fetching bookings:', error.message);
+        res.status(500).json({ error: 'Failed to fetch bookings from Airtable' });
+    }
+});
+
+// POST /webhook/flutterwave - Webhook handler
+app.post('/webhook/flutterwave', async (req, res) => {
     const signature = req.headers['verif-hash'];
     const secretHash = process.env.FLW_SECRET_HASH;
 
     // 1. Verify Signature
     if (!signature || signature !== secretHash) {
-        console.warn('Invalid signature received');
         return res.status(401).send('Unauthorized');
     }
 
     const payload = req.body;
-    console.log('Webhook received for TX:', payload.tx_ref);
+    const txRef = payload.tx_ref;
+    const status = payload.status === 'successful' ? 'Successful' : 'Failed';
+    const failureReason = payload.processor_response || 'Declined by processor';
 
-    // 2. Acknowledge Receipt Immediately
+    console.log(`Webhook received for TX: ${txRef}, Status: ${status}`);
+
+    // 2. Acknowledge immediately
     res.status(200).send('OK');
 
-    // 3. Verify Transaction with Flutterwave API (Crucial for Security)
+    // 3. Update Airtable asynchronously
     try {
-        const verificationResponse = await axios.get(
-            `https://api.flutterwave.com/v3/transactions/${payload.id}/verify`,
-            {
-                headers: {
-                    Authorization: `Bearer ${process.env.FLW_SECRET_KEY}`
-                }
-            }
-        );
+        // Find record by txRef
+        const searchResponse = await axios.get(`${airtableBaseUrl}?filterByFormula={Flutterwave TX Ref}='${txRef}'`, {
+            headers: { Authorization: `Bearer ${AIRTABLE_API_KEY}` }
+        });
 
-        const data = verificationResponse.data.data;
-        let paymentStatus = 'Pending';
-        let failureReason = '';
-        let resolutionSteps = '';
-
-        if (data.status === 'successful' && data.amount >= data.charged_amount) {
-            paymentStatus = 'সফল';
-        } else if (data.status === 'failed') {
-            paymentStatus = 'Failed';
+        if (searchResponse.data.records.length > 0) {
+            const recordId = searchResponse.data.records[0].id;
             
-            // Failure Analysis
-            const errorCode = data.processor_response || 'default';
-            const analysis = FAILURE_MAPPING[errorCode] || FAILURE_MAPPING['default'];
-            failureReason = analysis.msg;
-            resolutionSteps = analysis.action;
-
-            // 4. Trigger Make.com Automation for failed payments
-            if (process.env.MAKE_WEBHOOK_URL) {
-                await axios.post(process.env.MAKE_WEBHOOK_URL, {
-                    guest_email: data.customer.email,
-                    guest_name: data.customer.name,
-                    transaction_id: data.id,
-                    amount: data.amount,
-                    currency: data.currency,
-                    failure_reason: failureReason,
-                    resolution_steps: resolutionSteps,
-                    retry_link: `https://sentinelengine.softr.app/repay?tx_ref=${data.tx_ref}`
-                });
-            }
-        }
-
-        // 5. Update Airtable
-        if (!base) {
-            console.warn('Airtable not configured. Skipping database update.');
-            return;
-        }
-
-        const records = await base(tableName).select({
-            filterByFormula: `{Flutterwave TX Ref} = '${data.tx_ref}'`
-        }).firstPage();
-
-        if (records.length > 0) {
-            const recordId = records[0].id;
-            await base(tableName).update(recordId, {
-                'Payment Status': paymentStatus,
-                'Failure Reason': failureReason,
-                'Resolution Steps': resolutionSteps
+            await axios.patch(`${airtableBaseUrl}/${recordId}`, {
+                fields: {
+                    'Payment Status': status,
+                    'Failure Reason': status === 'Failed' ? failureReason : ''
+                }
+            }, {
+                headers: { 
+                    Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+                    'Content-Type': 'application/json'
+                }
             });
-            console.log(`Updated Airtable record ${recordId} set to ${paymentStatus}`);
+            console.log(`Airtable record ${recordId} updated to ${status}`);
         } else {
-            console.warn(`No Airtable record found for tx_ref: ${data.tx_ref}`);
+            console.warn(`No record found in Airtable for tx_ref: ${txRef}`);
         }
-
     } catch (error) {
-        console.error('Error processing webhook:', error.response ? error.response.data : error.message);
+        console.error('Error updating Airtable after webhook:', error.message);
     }
 });
 
