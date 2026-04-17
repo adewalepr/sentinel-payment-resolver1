@@ -50,7 +50,13 @@ app.get('/api/bookings', async (req, res) => {
 
         res.json(transformed);
     } catch (error) {
-        console.error('Error fetching bookings:', error.message);
+        if (error.response) {
+            // Log exactly what Airtable said
+            console.error('Airtable Error Status:', error.response.status);
+            console.error('Airtable Error Data:', JSON.stringify(error.response.data, null, 2));
+        } else {
+            console.error('Error fetching bookings:', error.message);
+        }
         res.status(500).json({ error: 'Failed to fetch bookings from Airtable' });
     }
 });
