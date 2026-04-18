@@ -162,7 +162,7 @@
                 document.getElementById('view-settings').classList.add('active');
             } else {
                 document.getElementById('view-dashboard').classList.add('active');
-                filterAndRender(viewName);
+                renderTable(allBookings, viewName);
             }
         }
 
@@ -176,7 +176,7 @@
                 
                 allBookings = await response.json();
                 updateStats(allBookings);
-                renderTable(allBookings);
+                renderTable(allBookings, 'dashboard');
             } catch (err) {
                 console.error('Error fetching bookings:', err);
                 document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="error-cell">Failed to load bookings. Check Render Environment Variables!</td></tr>`;
@@ -185,33 +185,79 @@
             }
         }
 
-        function filterAndRender(view) {
-            renderTable(allBookings);
-        }
-
-        function renderTable(data) {
+        function renderTable(data, view = 'dashboard') {
             const tableBody = document.getElementById('tableBody');
+            const tableHead = document.querySelector('thead tr');
+            
             if (data.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="7" class="empty-cell">No records found.</td></tr>`;
                 return;
             }
 
-            tableBody.innerHTML = data.map(b => `
-                <tr class="fade-in">
-                    <td><strong>${b.name}</strong></td>
-                    <td>${b.date ? String(b.date).split('T')[0] : 'N/A'}</td>
-                    <td>${b.amount}</td>
-                    <td><span class="badge ${getStatusClass(b.status)}">${b.status}</span></td>
-                    <td class="reason">${b.reason}</td>
-                    <td class="ref">${b.txRef}</td>
-                    <td>
-                        ${b.status === 'Failed' ? 
-                            `<button class="btn-retry" onclick="retryPayment('${b.txRef}')">Retry</button>` : 
-                            `<span class="no-action">-</span>`
-                        }
-                    </td>
-                </tr>
-            `).join('');
+            // Define Columns per View
+            let columns = [];
+            if (view === 'bookings') {
+                tableHead.innerHTML = `
+                    <th>GUEST NAME</th>
+                    <th>DATE</th>
+                    <th>STATUS</th>
+                    <th>ACTIONS</th>
+                `;
+                tableBody.innerHTML = data.map(b => `
+                    <tr class="fade-in">
+                        <td><strong>${b.name}</strong></td>
+                        <td>${b.date ? String(b.date).split('T')[0] : 'N/A'}</td>
+                        <td><span class="badge ${getStatusClass(b.status)}">${b.status}</span></td>
+                        <td>-</td>
+                    </tr>
+                `).join('');
+            } else if (view === 'payments') {
+                tableHead.innerHTML = `
+                    <th>GUEST NAME</th>
+                    <th>AMOUNT</th>
+                    <th>STATUS</th>
+                    <th>TX REF</th>
+                    <th>ACTIONS</th>
+                `;
+                tableBody.innerHTML = data.map(b => `
+                    <tr class="fade-in">
+                        <td><strong>${b.name}</strong></td>
+                        <td>${b.amount}</td>
+                        <td><span class="badge ${getStatusClass(b.status)}">${b.status}</span></td>
+                        <td class="ref">${b.txRef}</td>
+                        <td>
+                            ${b.status === 'Failed' ? `<button class="btn-retry" onclick="retryPayment('${b.txRef}')">Retry</button>` : `<span class="no-action">-</span>`}
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                // Dashboard (Full View)
+                tableHead.innerHTML = `
+                    <th>GUEST NAME</th>
+                    <th>DATE</th>
+                    <th>AMOUNT</th>
+                    <th>STATUS</th>
+                    <th>FAILURE REASON</th>
+                    <th>TX REF</th>
+                    <th>ACTIONS</th>
+                `;
+                tableBody.innerHTML = data.map(b => `
+                    <tr class="fade-in">
+                        <td><strong>${b.name}</strong></td>
+                        <td>${b.date ? String(b.date).split('T')[0] : 'N/A'}</td>
+                        <td>${b.amount}</td>
+                        <td><span class="badge ${getStatusClass(b.status)}">${b.status}</span></td>
+                        <td class="reason">${b.reason}</td>
+                        <td class="ref">${b.txRef}</td>
+                        <td>
+                            ${b.status === 'Failed' ? 
+                                `<button class="btn-retry" onclick="retryPayment('${b.txRef}')">Retry</button>` : 
+                                `<span class="no-action">-</span>`
+                            }
+                        </td>
+                    </tr>
+                `).join('');
+            }
         }
 
         function updateStats(bookings) {
