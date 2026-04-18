@@ -50,13 +50,7 @@ app.get('/api/bookings', async (req, res) => {
 
         res.json(transformed);
     } catch (error) {
-        if (error.response) {
-            // Log exactly what Airtable said
-            console.error('Airtable Error Status:', error.response.status);
-            console.error('Airtable Error Data:', JSON.stringify(error.response.data, null, 2));
-        } else {
-            console.error('Error fetching bookings:', error.message);
-        }
+        console.error('Error fetching bookings:', error.message);
         res.status(500).json({ error: 'Failed to fetch bookings from Airtable' });
     }
 });
@@ -111,34 +105,6 @@ app.post('/webhook/flutterwave', async (req, res) => {
     }
 });
 
-app.listen(port, async () => {
+app.listen(port, () => {
     console.log(`Sentinel Resolver listening at http://localhost:${port}`);
-    
-    // Startup Diagnostics
-    console.log('--- Startup Diagnostics ---');
-    console.log('AIRTABLE_API_KEY found:', !!process.env.AIRTABLE_API_KEY);
-    if (process.env.AIRTABLE_API_KEY) {
-        console.log('AIRTABLE_API_KEY starts with:', process.env.AIRTABLE_API_KEY.substring(0, 8) + '...');
-    }
-    console.log('AIRTABLE_BASE_ID found:', !!process.env.AIRTABLE_BASE_ID);
-    console.log('AIRTABLE_TABLE_NAME:', process.env.AIRTABLE_TABLE_NAME || 'Bookings');
-    
-    // STARTUP TEST: Try to connect to Airtable immediately
-    console.log('--- Running Startup Connection Test ---');
-    try {
-        const testResponse = await axios.get(airtableBaseUrl, {
-            headers: { Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}` }
-        });
-        console.log('✅ Startup Test SUCCESS: Connected to Airtable.');
-        console.log('Records found:', testResponse.data.records.length);
-    } catch (error) {
-        console.log('❌ Startup Test FAILED: Could not connect to Airtable.');
-        if (error.response) {
-            console.log('Error Status:', error.response.status);
-            console.log('Error Data:', JSON.stringify(error.response.data, null, 2));
-        } else {
-            console.log('Error Message:', error.message);
-        }
-    }
-    console.log('---------------------------');
 });
