@@ -137,16 +137,20 @@ body {
 /* Views */
 .content-view {
     display: none;
-    animation: fadeIn 0.2s ease-out;
+    animation: fadeIn 0.3s ease;
 }
 
 .content-view.active {
     display: block;
 }
 
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.4s ease forwards;
 }
 
 /* Stats */
