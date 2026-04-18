@@ -135,7 +135,7 @@
             tableBody.innerHTML = bookings.map(b => `
                 <tr class="fade-in">
                     <td><strong>${b.name}</strong></td>
-                    <td>${b.date ? b.date.split('T')[0] : 'N/A'}</td>
+                    <td>${b.date ? String(b.date).split('T')[0] : 'N/A'}</td>
                     <td>${b.amount}</td>
                     <td><span class="badge ${getStatusClass(b.status)}">${b.status}</span></td>
                     <td class="reason">${b.reason}</td>
