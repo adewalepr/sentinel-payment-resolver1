@@ -20,95 +20,141 @@
                 <div class="nav-item active">
                     <i>📊</i> Dashboard
                 </div>
-                <div class="nav-item">
-                    <i>🏨</i> Bookings
-                </div>
-                <div class="nav-item">
-                    <i>💳</i> Payments
-                </div>
-                <div class="nav-item">
-                    <i>⚙️</i> Settings
+                <div class="nav-links">
+                    <a href="javascript:void(0)" class="nav-item active" id="nav-dashboard" onclick="showView('dashboard')"><i class="fas fa-th-large"></i> Dashboard</a>
+                    <a href="javascript:void(0)" class="nav-item" id="nav-bookings" onclick="showView('bookings')"><i class="fas fa-calendar-alt"></i> Bookings</a>
+                    <a href="javascript:void(0)" class="nav-item" id="nav-payments" onclick="showView('payments')"><i class="fas fa-credit-card"></i> Payments</a>
+                    <a href="javascript:void(0)" class="nav-item" id="nav-settings" onclick="showView('settings')"><i class="fas fa-cog"></i> Settings</a>
                 </div>
             </nav>
         </aside>
 
         <!-- Main Content -->
         <main class="main-content">
-            <header>
-                <h1>Booking Overview</h1>
-                <div class="user-profile">
+            <header class="top-bar">
+                <h1 id="view-title">Booking Overview</h1>
+                <div class="system-status">
                     <div class="status-dot"></div>
                     <span>System Online</span>
                 </div>
             </header>
 
-            <!-- Stats Grid -->
-            <section class="stats-grid">
-                <div class="stat-card">
-                    <span class="label">Total Bookings</span>
-                    <h2 id="stat-total">--</h2>
-                    <span class="trend">+12% vs last month</span>
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="content-section">
+                <div class="stats-grid">
+                    <div class="stat-card pink">
+                        <h3>Total Bookings</h3>
+                        <div class="stat-value" id="stat-total">--</div>
+                        <div class="stat-change">+12% vs last month</div>
+                    </div>
+                    <div class="stat-card green">
+                        <h3>Successful Payments</h3>
+                        <div class="stat-value" id="stat-success">--</div>
+                        <div class="stat-change">89% completion</div>
+                    </div>
+                    <div class="stat-card red">
+                        <h3>Failed Attempts</h3>
+                        <div class="stat-value" id="stat-failed">--</div>
+                        <div class="stat-change">Requires Attention</div>
+                    </div>
+                    <div class="stat-card blue">
+                        <h3>Pending</h3>
+                        <div class="stat-value" id="stat-pending">--</div>
+                        <div class="stat-change">Awaiting Webhook</div>
+                    </div>
                 </div>
-                <div class="stat-card success">
-                    <span class="label">Successful Payments</span>
-                    <h2 id="stat-success">--</h2>
-                    <span class="trend">89% completion</span>
-                </div>
-                <div class="stat-card danger">
-                    <span class="label">Failed Attempts</span>
-                    <h2 id="stat-failed">--</h2>
-                    <span class="trend">Requires Attention</span>
-                </div>
-                <div class="stat-card">
-                    <span class="label">Pending</span>
-                    <h2 id="stat-pending">--</h2>
-                    <span class="trend">Awaiting Webhook</span>
-                </div>
-            </section>
 
-            <!-- Controls -->
-            <section class="controls">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Search by Guest or TX Ref...">
+                <div class="table-container">
+                    <div class="table-header">
+                        <input type="text" placeholder="Search by Guest or TX Ref..." class="search-input" id="searchBar">
+                        <select class="filter-select" id="statusFilter">
+                            <option value="all">All Statuses</option>
+                            <option value="Successful">Successful</option>
+                            <option value="Failed">Failed</option>
+                            <option value="Pending">Pending</option>
+                        </select>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>GUEST NAME</th>
+                                <th>DATE</th>
+                                <th>AMOUNT</th>
+                                <th>STATUS</th>
+                                <th>FAILURE REASON</th>
+                                <th>TX REF</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Data injected here -->
+                        </tbody>
+                    </table>
                 </div>
-                <div class="filter-box">
-                    <select id="statusFilter">
-                        <option value="all">All Statuses</option>
-                        <option value="Pending">Pending</option>
-                        <option value="সফল">সফল (Successful)</option>
-                        <option value="Failed">Failed</option>
-                    </select>
-                </div>
-            </section>
+            </div>
 
-            <!-- Table -->
-            <section class="table-container">
-                <div id="loading" class="loading-overlay">
-                    <div class="spinner"></div>
-                    <p>Fetching booking data...</p>
+            <!-- Settings View -->
+            <div id="view-settings" class="content-section" style="display: none;">
+                <div class="settings-card glass">
+                    <h2>System Configuration</h2>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <label>Backend Status</label>
+                            <span class="badge success">Connected</span>
+                        </div>
+                        <div class="setting-item">
+                            <label>Airtable Integration</label>
+                            <span class="badge success">Active</span>
+                        </div>
+                        <div class="setting-item">
+                            <label>Webhook Listener</label>
+                            <span class="badge warning">Listening</span>
+                        </div>
+                        <div class="setting-item">
+                            <label>Environment</label>
+                            <span class="badge blue">Production (Render)</span>
+                        </div>
+                    </div>
+                    <hr style="margin: 2rem 0; border: none; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Sentinel Resolver v2.0 - AAIC Stage 2 Optimization</p>
                 </div>
-                <table id="bookingTable">
-                    <thead>
-                        <tr>
-                            <th>Guest Name</th>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Failure Reason</th>
-                            <th>TX Ref</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <!-- Dynamic Content -->
-                    </tbody>
-                </table>
-            </section>
+            </div>
         </main>
+    </div>
+
+    <div id="loading" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
     </div>
 
     <script>
         let allBookings = [];
+
+        // Tab Switching Logic
+        function showView(viewName) {
+            // Update Title
+            const titles = {
+                'dashboard': 'Booking Overview',
+                'bookings': 'Guest Schedules',
+                'payments': 'Transaction History',
+                'settings': 'System Settings'
+            };
+            document.getElementById('view-title').innerText = titles[viewName];
+
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`nav-${viewName}`).classList.add('active');
+
+            // Toggle visibility
+            if (viewName === 'settings') {
+                document.getElementById('view-dashboard').style.display = 'none';
+                document.getElementById('view-settings').style.display = 'block';
+            } else {
+                document.getElementById('view-dashboard').style.display = 'block';
+                document.getElementById('view-settings').style.display = 'none';
+                // Re-render table with filtering if needed
+                filterAndRender(viewName);
+            }
+        }
 
         async function fetchBookings() {
             const loading = document.getElementById('loading');
@@ -119,20 +165,32 @@
                 if (!response.ok) throw new Error('Network response was not ok');
                 
                 allBookings = await response.json();
-                
-                updateUI(allBookings);
                 updateStats(allBookings);
+                renderTable(allBookings);
             } catch (err) {
                 console.error('Error fetching bookings:', err);
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 2rem; color: var(--danger);">Failed to load bookings. Please check console for details.</td></tr>`;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 2rem; color: var(--danger);">Failed to load bookings. Double check your Airtable Keys in Render!</td></tr>`;
             } finally {
                 loading.style.display = 'none';
             }
         }
 
-        function updateUI(bookings) {
+        function filterAndRender(view) {
+            let filtered = allBookings;
+            if (view === 'payments') {
+                // Focus on financial data (no filter, just visualization in table)
+                renderTable(allBookings);
+            } else if (view === 'bookings') {
+                // Maybe only show pending/future bookings? For now keep all
+                renderTable(allBookings);
+            } else {
+                renderTable(allBookings);
+            }
+        }
+
+        function renderTable(data) {
             const tableBody = document.getElementById('tableBody');
-            tableBody.innerHTML = bookings.map(b => `
+            tableBody.innerHTML = data.map(b => `
                 <tr class="fade-in">
                     <td><strong>${b.name}</strong></td>
                     <td>${b.date ? String(b.date).split('T')[0] : 'N/A'}</td>
@@ -158,28 +216,20 @@
         }
 
         function getStatusClass(status) {
-            if (status === 'Successful') return 'success';
-            if (status === 'Failed') return 'danger';
-            return 'pending';
+            if (status === 'Successful' || status === 'successful') return 'success';
+            if (status === 'Failed' || status === 'failed') return 'danger';
+            return 'warning';
         }
 
-        function retryPayment(txRef) {
-            // Redirect to retry page as required
-            window.location.href = `retry-payment.html?tx_ref=${txRef}`;
+        function retryPayment(ref) {
+            // Logic to redirect back to payment page with ref
+            window.open(`https://sentinelengine.softr.app?txRef=${ref}`, '_blank');
         }
 
-        // Filters
-        document.getElementById('statusFilter').addEventListener('change', (e) => {
-            const val = e.target.value;
-            // Map "সফল" filter to "Successful" if necessary, but we standardized the data now
-            const filtered = val === 'all' ? allBookings : allBookings.filter(b => b.status === val);
-            updateUI(filtered);
-        });
-
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            const val = e.target.value.toLowerCase();
+        // Search and Filter Logic
+        document.getElementById('searchBar').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
             const filtered = allBookings.filter(b => 
-                b.name.toLowerCase().includes(val) || 
                 b.txRef.toLowerCase().includes(val)
             );
             updateUI(filtered);
