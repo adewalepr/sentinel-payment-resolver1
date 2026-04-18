@@ -154,14 +154,21 @@
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById(`nav-${viewName}`).classList.add('active');
 
-            // Hide all views
-            document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
+            const isSettings = viewName === 'settings';
+            const targetId = isSettings ? 'view-settings' : 'view-dashboard';
+            const otherId = isSettings ? 'view-dashboard' : 'view-settings';
 
-            // Show selected
-            if (viewName === 'settings') {
-                document.getElementById('view-settings').classList.add('active');
-            } else {
-                document.getElementById('view-dashboard').classList.add('active');
+            const targetEl = document.getElementById(targetId);
+            const otherEl = document.getElementById(otherId);
+
+            // Only toggle containers and trigger animations if we are actually switching containers
+            if (!targetEl.classList.contains('active')) {
+                otherEl.classList.remove('active');
+                targetEl.classList.add('active');
+            }
+
+            // If we are in the dashboard/bookings/payments area, just update the table data
+            if (!isSettings) {
                 renderTable(allBookings, viewName);
             }
         }
