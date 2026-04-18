@@ -185,6 +185,21 @@
             }
         }
 
+        function formatDate(dateVal) {
+            if (!dateVal) return 'N/A';
+            // Handle arrays (sometimes returned by Airtable Lookups)
+            if (Array.isArray(dateVal)) dateVal = dateVal[0];
+            // Handle objects (if somehow passed as one)
+            if (typeof dateVal === 'object' && dateVal !== null) {
+                dateVal = dateVal.specialValue || dateVal.value || JSON.stringify(dateVal);
+            }
+            const d = new Date(dateVal);
+            if (!isNaN(d.getTime())) return d.toISOString().split('T')[0];
+            // Last resort string parsing
+            const str = String(dateVal);
+            return str.includes('object Object') ? 'N/A' : str.substring(0, 10);
+        }
+
         function renderTable(data, view = 'dashboard') {
             const tableBody = document.getElementById('tableBody');
             const tableHead = document.querySelector('thead tr');
@@ -195,7 +210,6 @@
             }
 
             // Define Columns per View
-            let columns = [];
             if (view === 'bookings') {
                 tableHead.innerHTML = `
                     <th>GUEST NAME</th>
@@ -206,7 +220,7 @@
                 tableBody.innerHTML = data.map(b => `
                     <tr class="fade-in">
                         <td><strong>${b.name}</strong></td>
-                        <td>${b.date ? String(b.date).split('T')[0] : 'N/A'}</td>
+                        <td>${formatDate(b.date)}</td>
                         <td><span class="badge ${getStatusClass(b.status)}">${b.status}</span></td>
                         <td>-</td>
                     </tr>
@@ -244,7 +258,7 @@
                 tableBody.innerHTML = data.map(b => `
                     <tr class="fade-in">
                         <td><strong>${b.name}</strong></td>
-                        <td>${b.date ? String(b.date).split('T')[0] : 'N/A'}</td>
+                        <td>${formatDate(b.date)}</td>
                         <td>${b.amount}</td>
                         <td><span class="badge ${getStatusClass(b.status)}">${b.status}</span></td>
                         <td class="reason">${b.reason}</td>
