@@ -111,7 +111,7 @@ app.post('/webhook/flutterwave', async (req, res) => {
     }
 });
 
-app.listen(port, () => {
+app.listen(port, async () => {
     console.log(`Sentinel Resolver listening at http://localhost:${port}`);
     
     // Startup Diagnostics
@@ -122,5 +122,23 @@ app.listen(port, () => {
     }
     console.log('AIRTABLE_BASE_ID found:', !!process.env.AIRTABLE_BASE_ID);
     console.log('AIRTABLE_TABLE_NAME:', process.env.AIRTABLE_TABLE_NAME || 'Bookings');
+    
+    // STARTUP TEST: Try to connect to Airtable immediately
+    console.log('--- Running Startup Connection Test ---');
+    try {
+        const testResponse = await axios.get(airtableBaseUrl, {
+            headers: { Authorization: `Bearer ${process.env.AIRTABLE_API_KEY}` }
+        });
+        console.log('✅ Startup Test SUCCESS: Connected to Airtable.');
+        console.log('Records found:', testResponse.data.records.length);
+    } catch (error) {
+        console.log('❌ Startup Test FAILED: Could not connect to Airtable.');
+        if (error.response) {
+            console.log('Error Status:', error.response.status);
+            console.log('Error Data:', JSON.stringify(error.response.data, null, 2));
+        } else {
+            console.log('Error Message:', error.message);
+        }
+    }
     console.log('---------------------------');
 });
