@@ -158,16 +158,11 @@
             const targetId = isSettings ? 'view-settings' : 'view-dashboard';
             const otherId = isSettings ? 'view-dashboard' : 'view-settings';
 
-            const targetEl = document.getElementById(targetId);
-            const otherEl = document.getElementById(otherId);
+            // Swap active views
+            document.getElementById(otherId).classList.remove('active');
+            document.getElementById(targetId).classList.add('active');
 
-            // Only toggle containers and trigger animations if we are actually switching containers
-            if (!targetEl.classList.contains('active')) {
-                otherEl.classList.remove('active');
-                targetEl.classList.add('active');
-            }
-
-            // If we are in the dashboard/bookings/payments area, just update the table data
+            // Always update table if in dashboard view
             if (!isSettings) {
                 renderTable(allBookings, viewName);
             }
