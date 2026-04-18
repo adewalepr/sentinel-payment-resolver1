@@ -6,7 +6,7 @@
     <title>Sentinel Admin | Fintech Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/airtable@0.12.2/build/airtable.browser.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="app-container">
@@ -16,16 +16,19 @@
                 <div class="logo-icon"></div>
                 <span>Sentinel Admin</span>
             </div>
-            <nav>
-                <div class="nav-item active">
-                    <i>📊</i> Dashboard
-                </div>
-                <div class="nav-links">
-                    <a href="javascript:void(0)" class="nav-item active" id="nav-dashboard" onclick="showView('dashboard')"><i class="fas fa-th-large"></i> Dashboard</a>
-                    <a href="javascript:void(0)" class="nav-item" id="nav-bookings" onclick="showView('bookings')"><i class="fas fa-calendar-alt"></i> Bookings</a>
-                    <a href="javascript:void(0)" class="nav-item" id="nav-payments" onclick="showView('payments')"><i class="fas fa-credit-card"></i> Payments</a>
-                    <a href="javascript:void(0)" class="nav-item" id="nav-settings" onclick="showView('settings')"><i class="fas fa-cog"></i> Settings</a>
-                </div>
+            <nav class="nav-links">
+                <a href="javascript:void(0)" class="nav-item active" id="nav-dashboard" onclick="showView('dashboard')">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </a>
+                <a href="javascript:void(0)" class="nav-item" id="nav-bookings" onclick="showView('bookings')">
+                    <i class="fas fa-calendar-alt"></i> Bookings
+                </a>
+                <a href="javascript:void(0)" class="nav-item" id="nav-payments" onclick="showView('payments')">
+                    <i class="fas fa-credit-card"></i> Payments
+                </a>
+                <a href="javascript:void(0)" class="nav-item" id="nav-settings" onclick="showView('settings')">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
             </nav>
         </aside>
 
@@ -40,33 +43,36 @@
             </header>
 
             <!-- Dashboard View -->
-            <div id="view-dashboard" class="content-section">
+            <div id="view-dashboard" class="content-view active">
                 <div class="stats-grid">
                     <div class="stat-card pink">
-                        <h3>Total Bookings</h3>
-                        <div class="stat-value" id="stat-total">--</div>
-                        <div class="stat-change">+12% vs last month</div>
+                        <span class="label">Total Bookings</span>
+                        <h2 id="stat-total">--</h2>
+                        <span class="trend">+12% vs last month</span>
                     </div>
                     <div class="stat-card green">
-                        <h3>Successful Payments</h3>
-                        <div class="stat-value" id="stat-success">--</div>
-                        <div class="stat-change">89% completion</div>
+                        <span class="label">Successful Payments</span>
+                        <h2 id="stat-success">--</h2>
+                        <span class="trend">89% completion</span>
                     </div>
                     <div class="stat-card red">
-                        <h3>Failed Attempts</h3>
-                        <div class="stat-value" id="stat-failed">--</div>
-                        <div class="stat-change">Requires Attention</div>
+                        <span class="label">Failed Attempts</span>
+                        <h2 id="stat-failed">--</h2>
+                        <span class="trend">Requires Attention</span>
                     </div>
                     <div class="stat-card blue">
-                        <h3>Pending</h3>
-                        <div class="stat-value" id="stat-pending">--</div>
-                        <div class="stat-change">Awaiting Webhook</div>
+                        <span class="label">Pending</span>
+                        <h2 id="stat-pending">--</h2>
+                        <span class="trend">Awaiting Webhook</span>
                     </div>
                 </div>
 
                 <div class="table-container">
                     <div class="table-header">
-                        <input type="text" placeholder="Search by Guest or TX Ref..." class="search-input" id="searchBar">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search by Guest or TX Ref..." id="searchBar">
+                        </div>
                         <select class="filter-select" id="statusFilter">
                             <option value="all">All Statuses</option>
                             <option value="Successful">Successful</option>
@@ -74,27 +80,29 @@
                             <option value="Pending">Pending</option>
                         </select>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>GUEST NAME</th>
-                                <th>DATE</th>
-                                <th>AMOUNT</th>
-                                <th>STATUS</th>
-                                <th>FAILURE REASON</th>
-                                <th>TX REF</th>
-                                <th>ACTIONS</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            <!-- Data injected here -->
-                        </tbody>
-                    </table>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>GUEST NAME</th>
+                                    <th>DATE</th>
+                                    <th>AMOUNT</th>
+                                    <th>STATUS</th>
+                                    <th>FAILURE REASON</th>
+                                    <th>TX REF</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <!-- Data injected here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <!-- Settings View -->
-            <div id="view-settings" class="content-section" style="display: none;">
+            <div id="view-settings" class="content-view">
                 <div class="settings-card glass">
                     <h2>System Configuration</h2>
                     <div class="settings-grid">
@@ -115,15 +123,17 @@
                             <span class="badge blue">Production (Render)</span>
                         </div>
                     </div>
-                    <hr style="margin: 2rem 0; border: none; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">Sentinel Resolver v2.0 - AAIC Stage 2 Optimization</p>
+                    <hr class="divider">
+                    <p class="version-tag">Sentinel Resolver v2.0 - AAIC Stage 2 Optimization</p>
                 </div>
             </div>
         </main>
     </div>
 
-    <div id="loading" class="loading-overlay" style="display: none;">
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading-overlay">
         <div class="spinner"></div>
+        <p>Syncing data...</p>
     </div>
 
     <script>
@@ -131,27 +141,27 @@
 
         // Tab Switching Logic
         function showView(viewName) {
-            // Update Title
             const titles = {
                 'dashboard': 'Booking Overview',
                 'bookings': 'Guest Schedules',
                 'payments': 'Transaction History',
                 'settings': 'System Settings'
             };
+            
             document.getElementById('view-title').innerText = titles[viewName];
 
             // Update active nav item
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById(`nav-${viewName}`).classList.add('active');
 
-            // Toggle visibility
+            // Hide all views
+            document.querySelectorAll('.content-view').forEach(v => v.classList.remove('active'));
+
+            // Show selected
             if (viewName === 'settings') {
-                document.getElementById('view-dashboard').style.display = 'none';
-                document.getElementById('view-settings').style.display = 'block';
+                document.getElementById('view-settings').classList.add('active');
             } else {
-                document.getElementById('view-dashboard').style.display = 'block';
-                document.getElementById('view-settings').style.display = 'none';
-                // Re-render table with filtering if needed
+                document.getElementById('view-dashboard').classList.add('active');
                 filterAndRender(viewName);
             }
         }
@@ -169,27 +179,23 @@
                 renderTable(allBookings);
             } catch (err) {
                 console.error('Error fetching bookings:', err);
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 2rem; color: var(--danger);">Failed to load bookings. Double check your Airtable Keys in Render!</td></tr>`;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="error-cell">Failed to load bookings. Check Render Environment Variables!</td></tr>`;
             } finally {
                 loading.style.display = 'none';
             }
         }
 
         function filterAndRender(view) {
-            let filtered = allBookings;
-            if (view === 'payments') {
-                // Focus on financial data (no filter, just visualization in table)
-                renderTable(allBookings);
-            } else if (view === 'bookings') {
-                // Maybe only show pending/future bookings? For now keep all
-                renderTable(allBookings);
-            } else {
-                renderTable(allBookings);
-            }
+            renderTable(allBookings);
         }
 
         function renderTable(data) {
             const tableBody = document.getElementById('tableBody');
+            if (data.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="7" class="empty-cell">No records found.</td></tr>`;
+                return;
+            }
+
             tableBody.innerHTML = data.map(b => `
                 <tr class="fade-in">
                     <td><strong>${b.name}</strong></td>
@@ -200,7 +206,7 @@
                     <td class="ref">${b.txRef}</td>
                     <td>
                         ${b.status === 'Failed' ? 
-                            `<button class="btn-retry" onclick="retryPayment('${b.txRef}')">Retry Payment</button>` : 
+                            `<button class="btn-retry" onclick="retryPayment('${b.txRef}')">Retry</button>` : 
                             `<span class="no-action">-</span>`
                         }
                     </td>
@@ -216,13 +222,13 @@
         }
 
         function getStatusClass(status) {
-            if (status === 'Successful' || status === 'successful') return 'success';
-            if (status === 'Failed' || status === 'failed') return 'danger';
+            const s = status ? status.toLowerCase() : '';
+            if (s === 'successful') return 'success';
+            if (s === 'failed') return 'danger';
             return 'warning';
         }
 
         function retryPayment(ref) {
-            // Logic to redirect back to payment page with ref
             window.open(`https://sentinelengine.softr.app?txRef=${ref}`, '_blank');
         }
 
@@ -230,13 +236,20 @@
         document.getElementById('searchBar').addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
             const filtered = allBookings.filter(b => 
-                b.txRef.toLowerCase().includes(val)
+                b.name.toLowerCase().includes(term) || 
+                b.txRef.toLowerCase().includes(term)
             );
-            updateUI(filtered);
+            renderTable(filtered);
         });
 
-        // Initialize on page load
-        window.addEventListener('DOMContentLoaded', fetchBookings);
+        document.getElementById('statusFilter').addEventListener('change', (e) => {
+            const status = e.target.value;
+            const filtered = status === 'all' ? allBookings : allBookings.filter(b => b.status === status);
+            renderTable(filtered);
+        });
+
+        // Initialize
+        window.onload = fetchBookings;
     </script>
 </body>
 </html>
