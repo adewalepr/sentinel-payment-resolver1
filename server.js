@@ -41,7 +41,7 @@ app.get('/api/bookings', async (req, res) => {
 
         const transformed = response.data.records.map(record => ({
             name: record.fields['Guest Name'] || record.fields['Name'] || 'Guest',
-            date: record.fields['Created Time'] || record.createdTime,
+            date: record.createdTime || record.fields['Created Time'],
             amount: record.fields['Amount'] || '$0.00',
             status: mapStatus(record.fields['Payment Status']),
             reason: record.fields['Failure Reason'] || '-',
