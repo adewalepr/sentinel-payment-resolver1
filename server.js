@@ -113,4 +113,14 @@ app.post('/webhook/flutterwave', async (req, res) => {
 
 app.listen(port, () => {
     console.log(`Sentinel Resolver listening at http://localhost:${port}`);
+    
+    // Startup Diagnostics
+    console.log('--- Startup Diagnostics ---');
+    console.log('AIRTABLE_API_KEY found:', !!process.env.AIRTABLE_API_KEY);
+    if (process.env.AIRTABLE_API_KEY) {
+        console.log('AIRTABLE_API_KEY starts with:', process.env.AIRTABLE_API_KEY.substring(0, 8) + '...');
+    }
+    console.log('AIRTABLE_BASE_ID found:', !!process.env.AIRTABLE_BASE_ID);
+    console.log('AIRTABLE_TABLE_NAME:', process.env.AIRTABLE_TABLE_NAME || 'Bookings');
+    console.log('---------------------------');
 });
