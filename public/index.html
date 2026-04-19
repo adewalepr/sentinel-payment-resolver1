@@ -10,8 +10,19 @@
 </head>
 <body>
     <div class="app-container">
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <span>Sentinel Admin</span>
+            </div>
+            <button class="menu-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="logo">
                 <div class="logo-icon"></div>
                 <span>Sentinel Admin</span>
@@ -31,6 +42,7 @@
                 </a>
             </nav>
         </aside>
+        <div class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
 
         <!-- Main Content -->
         <main class="main-content">
@@ -165,6 +177,22 @@
             // Always update table if in dashboard view
             if (!isSettings) {
                 renderTable(allBookings, viewName);
+            }
+
+            // Close sidebar on mobile after clicking
+            if (window.innerWidth <= 768) {
+                toggleSidebar(false);
+            }
+        }
+
+        function toggleSidebar(force) {
+            const sidebar = document.getElementById('sidebar');
+            const isOpen = typeof force === 'boolean' ? force : !sidebar.classList.contains('mobile-active');
+            
+            if (isOpen) {
+                sidebar.classList.add('mobile-active');
+            } else {
+                sidebar.classList.remove('mobile-active');
             }
         }
 

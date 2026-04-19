@@ -381,3 +381,156 @@ tr:hover {
     padding: 4rem !important;
     color: var(--text-dim);
 }
+
+/* --- Responsive Design --- */
+
+/* Mobile Header (Hidden by default) */
+.mobile-header {
+    display: none;
+    background: #0d111c;
+    padding: 1rem 1.5rem;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--glass-border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.mobile-header .logo {
+    margin-bottom: 0;
+    font-size: 1rem;
+}
+
+.menu-toggle {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.menu-toggle:active {
+    transform: scale(0.95);
+}
+
+/* Tablets and Mobile */
+@media screen and (max-width: 1024px) {
+    .main-content {
+        padding: 2rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        overflow: auto; /* Allow scrolling on mobile */
+        height: auto;
+    }
+
+    .app-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .mobile-header {
+        display: flex;
+    }
+
+    /* Sidebar Drawer */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 280px;
+        height: 100vh;
+        z-index: 2000;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 20px 0 50px rgba(0,0,0,0.5);
+    }
+
+    .sidebar.mobile-active {
+        left: 0;
+    }
+
+    /* Main Content Adjustments */
+    .main-content {
+        padding: 1.5rem;
+        height: auto;
+        min-height: calc(100vh - 70px);
+    }
+
+    .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .top-bar h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        grid-template-columns: 1fr; /* Stack vertically on mobile */
+        gap: 1rem;
+    }
+
+    .stat-card {
+        padding: 1.5rem;
+    }
+
+    .stat-card h2 {
+        font-size: 1.8rem;
+    }
+
+    /* Table Header */
+    .table-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        padding: 1.25rem;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .filter-select {
+        width: 100%;
+    }
+
+    /* Table Cells */
+    th, td {
+        padding: 1rem;
+        font-size: 0.85rem;
+    }
+
+    /* Settings View mobile */
+    .settings-card {
+        padding: 1.5rem;
+        width: 100%;
+    }
+}
+
+/* Sidebar Backdrop on Mobile */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1500;
+}
+
+.sidebar.mobile-active + .sidebar-overlay {
+    display: block;
+}
